@@ -1,19 +1,11 @@
-# 🎓 Django Starter App
-A small Django project with two applications:
-
-- **courses_app** — for managing courses  
-- **members_app** — for managing participants
-
-The project demonstrates a **many-to-many relationship** between models, as well as basic CRUD operations (creating and displaying objects via forms and templates).
-
-## ⚙️ Installation and Environment Setup
+## ⚙️ Installation
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/AnnaKilimova/python_testing_portfolio.git
+git clone git@github.com:AnnaKilimova/class_based_views.git
 ```
 ### 2. Navigate to the project folder:
 ```bash
-cd django_starter_app
+cd class_based_views
 ```
 ### 3. Create and activate a virtual environment
 #### For MacOS / Linux:
@@ -26,100 +18,90 @@ source venv/bin/activate
 venv\Scripts\activate    
 ```
 ### 4. Install dependencies
-Make sure you are in the root folder of the project, where the requirements.txt file is located.
-If you are currently inside a subproject (for example, django_starter_app), go one level up first:
 ```bash
-cd ..
+pip install --upgrade pip
 pip install -r requirements.txt    
 ```
-or, if you prefer to stay in the subproject folder:
+This installs all required packages listed in requirements.txt, ensuring your environment matches the project dependencies.
+
+### 5. Install PostgreSQL
+Make sure PostgreSQL is installed and running locally:
+- macOS: `brew install postgresql`
+- Ubuntu: `sudo apt install postgresql`
+- Windows: Download from [https://www.postgresql.org/download/](https://www.postgresql.org/download/)
+
+### 6. Create a database and user
+After installing PostgreSQL, create a database and a user for the project:
 ```bash
-pip install -r ../requirements.txt 
+psql -U postgres
+CREATE DATABASE myproject_db;
+CREATE USER myproject_user WITH PASSWORD 'mypassword';
+ALTER ROLE myproject_user SET client_encoding TO 'utf8';
+ALTER ROLE myproject_user SET default_transaction_isolation TO 'read committed';
+ALTER ROLE myproject_user SET timezone TO 'UTC';
+GRANT ALL PRIVILEGES ON DATABASE myproject_db TO myproject_user;
+\q
 ```
-This command will install all necessary Python packages listed in the requirements.txt file,
-so your environment matches the dependencies used in the project.
+### 7. Configure your .env file
+Create a .env file in the project root and add your database configuration:
+<br>⚠️ Do NOT commit this file to GitHub. Use .env.example as a template.
+```bash
+SECRET_KEY=secret_key
+DEBUG=True
+DATABASE_NAME=myproject_db
+DATABASE_USER=myproject_user
+DATABASE_PASSWORD=mypassword
+DATABASE_HOST=localhost
+DATABASE_PORT=5432
+```
+
+### 8. Apply migrations:
+```bash
+python manage.py migrate
+```
 ## 🧩 Task Description
-Create a new Django project and implement two applications:
-- courses_app - for managing courses
-- members_app - for managing participants
-### 📝 Requirements:
-1. The models should have a many-to-many relationship between courses and members.
-2. Each app must include:
-   - Model (models.py)
-   - Form (forms.py)
-   - Views (views.py) for listing and creating objects
-   - Templates (templates/) for displaying lists and forms
-3. Set up routes (urls.py) and include them in the main project urls.py.
+Rewrite the existing views in the project to CBV, using at least 3 of the following:
+
+- DetailView
+- ListView
+- CreateView
+- UpdateView
+- DeleteView
+
 ### 🧪 Running Tests
 ```bash
-# ---------------- unittest ----------------
 python manage.py test
 ```
-The tests check:
-- creation of Course and Member objects;
-- many-to-many relationship between courses and members;
-- form validation (CourseForm, MemberForm);
-- basic view functionality (listing and creation).
+Tests cover:
+1. Course List View Tests
+2. Course Detail View Tests
+3. Course Creation Tests
+4. Course Update Tests
+5. Course Deletion Tests
+
+### 🙋‍♂️ Create superuser
+```bash
+python manage.py createsuperuser
+```
 ### 🚀 Running the Application
-After successful tests, start the development server:
+After tests pass, start the server:
 ```bash
 python manage.py runserver
 ```
-The app will be available at:
+The project will be available at:
 ```bash
 👉 http://127.0.0.1:8000/
 ```
+Available route:
 Available routes:
-- [/admin/](http://127.0.0.1:8000/admin/) - admin panel
-- [/courses/](http://127.0.0.1:8000/courses/) - list of courses
-- [/courses/create/](http://127.0.0.1:8000/courses/create/) - form for adding a new course
-- [/members/](http://127.0.0.1:8000/members/) - list of members
-- [/members/create/](http://127.0.0.1:8000/members/create/) - form for adding a new member
-  
-## 🧱 Project Structure
-```
-django_starter_app/
-│
-├── courses_app/
-│   ├── models.py
-│   ├── views.py
-│   ├── forms.py
-│   ├── urls.py
-│   ├── admin.py
-│   ├── apps.py
-│   ├── tests.py
-│   ├── templates/courses_app/
-│   │   ├── course_list.html
-│   │   └── course_form.html
-│   └── migrations/
-│       ├── __init__.py
-│       └── 0001_initial.py
-│
-├── django_starter_app/
-│   ├── settings.py
-│   ├── urls.py
-│   ├── asgi.py
-│   └── wsgi.py
-│
-├── members_app/
-│   ├── models.py
-│   ├── views.py
-│   ├── forms.py
-│   ├── urls.py
-│   ├── apps.py
-│   ├── tests.py
-│   ├── templates/members_app/
-│   │   ├── member_list.html
-│   │   └── member_form.html
-│   └── migrations/
-│       ├── __init__.py
-│       └── 0001_initial.py
-│
-└── manage.py
-```
-### 🧠 Notes
+- [/admin/](http://127.0.0.1:8000/admin/) — Django admin panel
+- [/courses/](http://127.0.0.1:8000/courses/) — List of all courses (ListView)
+- [/courses/create/](http://127.0.0.1:8000/courses/create/) — Create a new course (CreateView)
+- [/courses/2/](http://127.0.0.1:8000/courses/2/) — Course details (DetailView)
+- [/courses/2/update/](http://127.0.0.1:8000/courses/2/update/) — Update existing course (UpdateView)
+- [/courses/2/delete/](http://127.0.0.1:8000/courses/2/delete/) — Delete a course (DeleteView)
 
-The email field in the Member model uses EmailField(unique=True) - ensures email uniqueness.
-Validation occurs automatically through MemberForm.
-
-All tests use django.test.TestCase to provide database isolation.
+Stop the server:
+```bash
+^C
+```
